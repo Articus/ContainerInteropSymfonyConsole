@@ -1,0 +1,20 @@
+namespace: Test\ContainerInteropSymfonyConsole
+suites:
+  unit:
+    path: unit
+    actor: UnitTester
+    modules:
+      enabled:
+        - Asserts
+settings:
+#  shuffle: true
+  lint: true
+paths:
+  tests: tests
+  output: tests/_output
+  support: tests/_support
+  data: tests
+coverage:
+  enabled: true
+  include:
+    - src/*
