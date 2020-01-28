@@ -1,14 +1,19 @@
 language: php
 php:
-  - 7.1
-  - 7.2
+  - '7.1'
+  - '7.2'
+  - '7.3'
+  - '7.4'
 
 install:
   - composer install -o -n
-  - curl -s -L https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar > coveralls.phar
 
 script:
   - composer run-script test
 
 after_success:
-  - php coveralls.phar -v
+  - |
+    if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.4" ]]; then
+      curl -s -L https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar > coveralls.phar
+      php coveralls.phar -v
+    fi
