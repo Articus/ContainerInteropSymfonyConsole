@@ -1,2 +1,2 @@
-coverage_clover: tests/_output/coverage.xml
+coverage_clover: tests/_output/phpspec.coverage.xml
 json_path: tests/_output/coveralls-upload.json

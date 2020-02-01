@@ -5,11 +5,18 @@ php:
   - '7.3'
   - '7.4'
 
+before_install:
+  - phpenv config-rm xdebug.ini
+
 install:
-  - composer install -o -n
+  - |
+    if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.1" ]]; then
+      cp ./composer.lock.7.1 ./composer.lock
+    fi
+  - composer install --no-interaction --no-progress --no-suggest --classmap-authoritative
 
 script:
-  - composer run-script test
+  - phpdbg -qrr ./vendor/phpspec/phpspec/bin/phpspec run
 
 after_success:
   - |

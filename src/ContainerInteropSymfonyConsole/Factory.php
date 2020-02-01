@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ContainerInteropSymfonyConsole;
 
@@ -36,13 +37,13 @@ class Factory
 	 */
 	public static function __callStatic(string $name, array $arguments)
 	{
-		if (!((count($arguments) > 0) && ($arguments[0] instanceof ContainerInterface)))
+		if (!((\count($arguments) > 0) && ($arguments[0] instanceof ContainerInterface)))
 		{
-			throw new \InvalidArgumentException(sprintf(
+			throw new \InvalidArgumentException(\sprintf(
 				'To invoke %s with custom configuration key statically first argument should be %s, not %s',
 				static::class,
 				ContainerInterface::class,
-				is_object($arguments[0]) ? get_class($arguments[0]) : gettype($arguments[0])
+				\is_object($arguments[0]) ? \get_class($arguments[0]) : \gettype($arguments[0])
 			));
 		}
 		return (new static($name))->__invoke($arguments[0]);
@@ -86,7 +87,7 @@ class Factory
 		{
 			$result->getHelperSet()->set(
 				$this->getValidServiceInstance($helperNameOrInstance, $container, HelperInterface::class),
-				is_int($key) ? null : $key
+				\is_int($key) ? null : $key
 			);
 		}
 		return $result;
@@ -108,23 +109,23 @@ class Factory
 			case ($serviceNameOrInstance instanceof $serviceClassName):
 				$result = $serviceNameOrInstance;
 				break;
-			case (is_string($serviceNameOrInstance) && $container->has($serviceNameOrInstance)):
+			case (\is_string($serviceNameOrInstance) && $container->has($serviceNameOrInstance)):
 				$result = $container->get($serviceNameOrInstance);
 				if (!($result instanceof $serviceClassName))
 				{
-					throw new \InvalidArgumentException(sprintf(
+					throw new \InvalidArgumentException(\sprintf(
 						'Service %s should be %s, not %s.',
 						$serviceNameOrInstance,
 						$serviceClassName,
-						is_object($result) ? get_class($result) : gettype($result)
+						\is_object($result) ? \get_class($result) : \gettype($result)
 					));
 				}
 				break;
 			default:
-				throw new \InvalidArgumentException(sprintf(
+				throw new \InvalidArgumentException(\sprintf(
 					'Expecting either valid service name or instance of %s, not %s.',
 					$serviceClassName,
-					is_object($serviceNameOrInstance) ? get_class($serviceNameOrInstance) : gettype($serviceNameOrInstance)
+					\is_object($serviceNameOrInstance) ? \get_class($serviceNameOrInstance) : \gettype($serviceNameOrInstance)
 				));
 		}
 		return $result;
