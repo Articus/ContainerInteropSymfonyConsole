@@ -60,30 +60,30 @@ class Factory
 		$config = $container->get('config');
 		$options = new Options($config[$this->configKey] ?? []);
 
-		$result = new Application($options->getName(), $options->getVersion());
-		$result->setCatchExceptions($options->getCatchExceptions());
-		$result->setAutoExit($options->getAutoExit());
+		$result = new Application($options->name, $options->version);
+		$result->setCatchExceptions($options->catchExceptions);
+		$result->setAutoExit($options->autoExit);
 
-		foreach ($options->getCommands() as $commandNameOrInstance)
+		foreach ($options->commands as $commandNameOrInstance)
 		{
 			$result->add($this->getValidServiceInstance($commandNameOrInstance, $container, Command::class));
 		}
 
-		if ($options->getCommandLoader() !== null)
+		if ($options->commandLoader !== null)
 		{
 			$result->setCommandLoader(
-				$this->getValidServiceInstance($options->getCommandLoader(), $container, CommandLoaderInterface::class)
+				$this->getValidServiceInstance($options->commandLoader, $container, CommandLoaderInterface::class)
 			);
 		}
 
-		if ($options->getEventDispatcher() !== null)
+		if ($options->eventDispatcher !== null)
 		{
 			$result->setDispatcher(
-				$this->getValidServiceInstance($options->getEventDispatcher(), $container, EventDispatcherInterface::class)
+				$this->getValidServiceInstance($options->eventDispatcher, $container, EventDispatcherInterface::class)
 			);
 		}
 
-		foreach ($options->getHelpers() as $key => $helperNameOrInstance)
+		foreach ($options->helpers as $key => $helperNameOrInstance)
 		{
 			$result->getHelperSet()->set(
 				$this->getValidServiceInstance($helperNameOrInstance, $container, HelperInterface::class),
