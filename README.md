@@ -1,6 +1,6 @@
 # Container Interop for Symfony Console
 
-[![Travis](https://travis-ci.org/Articus/ContainerInteropSymfonyConsole.svg?branch=master)](https://travis-ci.org/Articus/ContainerInteropSymfonyConsole)
+[![GitHub Actions: Run tests](https://github.com/Articus/ContainerInteropSymfonyConsole/workflows/Run%20tests/badge.svg)](https://github.com/Articus/ContainerInteropSymfonyConsole/actions?query=workflow%3A%22Run+tests%22)
 [![Coveralls](https://coveralls.io/repos/github/Articus/ContainerInteropSymfonyConsole/badge.svg?branch=master)](https://coveralls.io/github/Articus/ContainerInteropSymfonyConsole?branch=master)
 [![Codacy](https://api.codacy.com/project/badge/Grade/0606a252112b4bb7846252345343f608)](https://www.codacy.com/app/articusw/ContainerInteropSymfonyConsole?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Articus/ContainerInteropSymfonyConsole&amp;utm_campaign=Badge_Grade)
 
