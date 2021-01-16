@@ -8,24 +8,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php:
-          - '7.1'
-          - '7.2'
-          - '7.3'
-          - '7.4'
-          - '8.0'
-    container: ghcr.io/articus/phpdbg-coveralls:${{ matrix.php }}_2020-12-28
+        include:
+          - php: '7.1'
+            has_unique_dependencies: true
+          - php: '7.2'
+            has_unique_dependencies: true
+          - php: '7.3'
+          - php: '7.4'
+          - php: '8.0'
+            upload_coverage: true
+    container: ghcr.io/articus/phpdbg-coveralls:${{ matrix.php }}_2.4.3_2021-01-16
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Replace composer.lock for PHP 7.1
-        if: matrix.php == '7.1'
-        run: cp ./composer.lock.7.1 ./composer.lock
-
-      - name: Replace composer.lock for PHP 7.2
-        if: matrix.php == '7.2'
-        run: cp ./composer.lock.7.2 ./composer.lock
+      - name: Use unique composer.lock
+        if: matrix.has_unique_dependencies
+        run: cp ./composer.lock.${{ matrix.php }} ./composer.lock
 
       - name: Install dependencies via Composer
         run: php ./composer.phar install --no-interaction --no-progress --prefer-dist --classmap-authoritative
@@ -34,7 +33,7 @@ jobs:
         run: phpdbg -qrr ./vendor/phpspec/phpspec/bin/phpspec run
 
       - name: Upload coverage to coveralls.io
-        if: matrix.php == '7.4'
+        if: matrix.upload_coverage
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls -v
