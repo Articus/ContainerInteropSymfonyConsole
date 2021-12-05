@@ -8,7 +8,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
 use Symfony\Component\Console\Helper\HelperInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher as SED;
 
 class Factory
 {
@@ -31,22 +31,13 @@ class Factory
 	 * "Static constructor" that simplifies creation of factory instances with custom configuration keys
 	 * @param string $name
 	 * @param array $arguments
-	 * @return mixed
+	 * @return Application
 	 * @throws \Psr\Container\ContainerExceptionInterface
 	 * @throws \Psr\Container\NotFoundExceptionInterface
 	 */
 	public static function __callStatic(string $name, array $arguments)
 	{
-		if (!((\count($arguments) > 0) && ($arguments[0] instanceof ContainerInterface)))
-		{
-			throw new \InvalidArgumentException(\sprintf(
-				'To invoke %s with custom configuration key statically first argument should be %s, not %s',
-				static::class,
-				ContainerInterface::class,
-				\is_object($arguments[0]) ? \get_class($arguments[0]) : \gettype($arguments[0])
-			));
-		}
-		return (new static($name))->__invoke($arguments[0]);
+		return (new static($name))(...$arguments);
 	}
 
 	/**
@@ -64,70 +55,76 @@ class Factory
 		$result->setCatchExceptions($options->catchExceptions);
 		$result->setAutoExit($options->autoExit);
 
-		foreach ($options->commands as $commandNameOrInstance)
+		foreach ($options->commands as $commandServiceName)
 		{
-			$result->add($this->getValidServiceInstance($commandNameOrInstance, $container, Command::class));
+			$result->add(self::getCommand($container, $commandServiceName));
 		}
 
 		if ($options->commandLoader !== null)
 		{
-			$result->setCommandLoader(
-				$this->getValidServiceInstance($options->commandLoader, $container, CommandLoaderInterface::class)
-			);
+			$commandLoader = null;
+			if ($options->commandLoader instanceof CommandLoader\Options\Merger)
+			{
+				$commandLoader = new CommandLoader\Merger();
+				foreach ($options->commandLoader->loaders as $loaderServiceName)
+				{
+					$commandLoader->addLoader(self::getLoader($container, $loaderServiceName));
+				}
+			}
+			else
+			{
+				$commandLoader = self::getLoader($container, $options->commandLoader);
+			}
+			$result->setCommandLoader($commandLoader);
 		}
 
 		if ($options->eventDispatcher !== null)
 		{
-			$result->setDispatcher(
-				$this->getValidServiceInstance($options->eventDispatcher, $container, EventDispatcherInterface::class)
-			);
+			$eventDispatcher = null;
+			if ($options->eventDispatcher instanceof EventDispatcher\Options)
+			{
+				$eventDispatcher = new SED\EventDispatcher();
+				foreach ($options->eventDispatcher->subscribers as $subscriberServiceName)
+				{
+					$eventDispatcher->addSubscriber(self::getSubscriber($container, $subscriberServiceName));
+				}
+			}
+			else
+			{
+				$eventDispatcher = self::getDispatcher($container, $options->eventDispatcher);
+			}
+			$result->setDispatcher($eventDispatcher);
 		}
 
-		foreach ($options->helpers as $key => $helperNameOrInstance)
+		foreach ($options->helpers as $key => $helperServiceName)
 		{
-			$result->getHelperSet()->set(
-				$this->getValidServiceInstance($helperNameOrInstance, $container, HelperInterface::class),
-				\is_int($key) ? null : $key
-			);
+			$result->getHelperSet()->set(self::getHelper($container, $helperServiceName),  \is_int($key) ? null : $key);
 		}
 		return $result;
 	}
 
-	/**
-	 * @param $serviceNameOrInstance
-	 * @param ContainerInterface $container
-	 * @param string $serviceClassName
-	 * @return mixed|null
-	 * @throws \Psr\Container\ContainerExceptionInterface
-	 * @throws \Psr\Container\NotFoundExceptionInterface
-	 */
-	protected function getValidServiceInstance($serviceNameOrInstance, ContainerInterface $container, string $serviceClassName)
+	protected static function getCommand(ContainerInterface $container, string $serviceName): Command
 	{
-		$result = null;
-		switch (true)
-		{
-			case ($serviceNameOrInstance instanceof $serviceClassName):
-				$result = $serviceNameOrInstance;
-				break;
-			case (\is_string($serviceNameOrInstance) && $container->has($serviceNameOrInstance)):
-				$result = $container->get($serviceNameOrInstance);
-				if (!($result instanceof $serviceClassName))
-				{
-					throw new \InvalidArgumentException(\sprintf(
-						'Service %s should be %s, not %s.',
-						$serviceNameOrInstance,
-						$serviceClassName,
-						\is_object($result) ? \get_class($result) : \gettype($result)
-					));
-				}
-				break;
-			default:
-				throw new \InvalidArgumentException(\sprintf(
-					'Expecting either valid service name or instance of %s, not %s.',
-					$serviceClassName,
-					\is_object($serviceNameOrInstance) ? \get_class($serviceNameOrInstance) : \gettype($serviceNameOrInstance)
-				));
-		}
-		return $result;
+		return $container->get($serviceName);
+	}
+
+	protected static function getLoader(ContainerInterface $container, string $serviceName): CommandLoaderInterface
+	{
+		return $container->get($serviceName);
+	}
+
+	protected static function getSubscriber(ContainerInterface $container, string $serviceName): SED\EventSubscriberInterface
+	{
+		return $container->get($serviceName);
+	}
+
+	protected static function getDispatcher(ContainerInterface $container, string $serviceName): SED\EventDispatcherInterface
+	{
+		return $container->get($serviceName);
+	}
+
+	protected static function getHelper(ContainerInterface $container, string $serviceName): HelperInterface
+	{
+		return $container->get($serviceName);
 	}
 }

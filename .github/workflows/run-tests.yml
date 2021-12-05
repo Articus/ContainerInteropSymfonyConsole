@@ -14,10 +14,14 @@ jobs:
           - php: '7.2'
             has_unique_dependencies: true
           - php: '7.3'
+            has_unique_dependencies: true
           - php: '7.4'
+            has_unique_dependencies: true
           - php: '8.0'
             upload_coverage: true
-    container: ghcr.io/articus/phpdbg-coveralls:${{ matrix.php }}_2.4.3_2021-01-16
+            #TODO gather coverage on 8.1 when Kahlan fully supports it
+          - php: '8.1'
+    container: ghcr.io/articus/phpdbg-coveralls:${{ matrix.php }}_2.5.1_2021-12-05
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -29,8 +33,10 @@ jobs:
       - name: Install dependencies via Composer
         run: php ./composer.phar install --no-interaction --no-progress --prefer-dist --classmap-authoritative
 
-      - name: Run PhpSpec tests
-        run: phpdbg -qrr ./vendor/phpspec/phpspec/bin/phpspec run
+      - name: Run Kahlan tests
+        run: |
+          mkdir -p ./spec_output
+          phpdbg -qrr ./vendor/kahlan/kahlan/bin/kahlan
 
       - name: Upload coverage to coveralls.io
         if: matrix.upload_coverage

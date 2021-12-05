@@ -1,2 +1,2 @@
-coverage_clover: spec_output/phpspec.coverage.xml
+coverage_clover: spec_output/kahlan.coverage.xml
 json_path: spec_output/coveralls-upload.json

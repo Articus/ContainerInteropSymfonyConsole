@@ -23,8 +23,9 @@ class Options
 	public $version = '1.0.0';
 
 	/**
-	 * List of service names or service instances that should be added as console application commands
-	 * @var string[]|Command[]
+	 * Container service names of commands that should be added to console application
+	 * @see Command
+	 * @var string[]
 	 */
 	public $commands = [];
 
@@ -43,20 +44,27 @@ class Options
 	public $autoExit = true;
 
 	/**
-	 * Name in container or instance of command loader service for console application
-	 * @var string|CommandLoaderInterface|null
+	 * Container service names of command loader where console application should look for commands
+	 * or options to construct command loader merger
+	 * @see CommandLoaderInterface
+	 * @see CommandLoader\Merger
+	 * @var string|CommandLoader\Options\Merger|null
 	 */
 	public $commandLoader = null;
 
 	/**
-	 * Name in container or instance of event dispatcher service for console application
-	 * @var string|EventDispatcherInterface|null
+	 * Container service name of event dispatcher that console application should use
+	 * or options to construct such event dispatcher
+	 * @see EventDispatcherInterface
+	 * @var string|EventDispatcher\Options|null
 	 */
 	public $eventDispatcher = null;
 
 	/**
-	 * Map of service names or service instances that should be added to console application helper set with specified keys
-	 * @var string[]|HelperInterface[] - Map<string, string|HelperInterface>
+	 * Container service names of helpers that should be added to console application helper set.
+	 * If map key is not numeric it is used as helper alias.
+	 * @see HelperInterface
+	 * @var array<string|int, string> map "optional helper alias" -> "helper service name"
 	 */
 	public $helpers = [];
 
@@ -85,11 +93,11 @@ class Options
 					break;
 				case 'commandLoader':
 				case 'command_loader':
-					$this->commandLoader = $value;
+					$this->commandLoader = \is_string($value) ? $value : new CommandLoader\Options\Merger($value);
 					break;
 				case 'eventDispatcher':
 				case 'event_dispatcher':
-					$this->eventDispatcher = $value;
+					$this->eventDispatcher = \is_string($value) ? $value : new EventDispatcher\Options($value);
 					break;
 				case 'helpers':
 					$this->helpers = $value;
