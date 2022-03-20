@@ -18,10 +18,9 @@ jobs:
           - php: '7.4'
             has_unique_dependencies: true
           - php: '8.0'
-            upload_coverage: true
-            #TODO gather coverage on 8.1 when Kahlan fully supports it
           - php: '8.1'
-    container: ghcr.io/articus/phpdbg-coveralls:${{ matrix.php }}_2.5.1_2021-12-05
+            upload_coverage: true
+    container: ghcr.io/articus/phpdbg-coveralls:${{ matrix.php }}_2.5.2_2022-03-20
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
