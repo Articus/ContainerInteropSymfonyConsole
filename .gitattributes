@@ -6,4 +6,5 @@
 composer.lock export-ignore
 composer.lock.* export-ignore
 composer.phar export-ignore
+composer.phar.* export-ignore
 kahlan-config.php export-ignore
