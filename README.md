@@ -2,8 +2,7 @@
 
 [![GitHub Actions: Run tests](https://github.com/Articus/ContainerInteropSymfonyConsole/workflows/Run%20tests/badge.svg)](https://github.com/Articus/ContainerInteropSymfonyConsole/actions?query=workflow%3A%22Run+tests%22)
 [![Coveralls](https://coveralls.io/repos/github/Articus/ContainerInteropSymfonyConsole/badge.svg?branch=master)](https://coveralls.io/github/Articus/ContainerInteropSymfonyConsole?branch=master)
-[![Codacy](https://api.codacy.com/project/badge/Grade/0606a252112b4bb7846252345343f608)](https://www.codacy.com/app/articusw/ContainerInteropSymfonyConsole?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Articus/ContainerInteropSymfonyConsole&amp;utm_campaign=Badge_Grade)
-
+[![Codacy](https://app.codacy.com/project/badge/Grade/0606a252112b4bb7846252345343f608)](https://www.codacy.com/gh/Articus/ContainerInteropSymfonyConsole/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Articus/ContainerInteropSymfonyConsole&amp;utm_campaign=Badge_Grade)
 This package provides a small factory that allows creating [Symfony Console Application](https://symfony.com/doc/current/components/console.html) via PSR-11 compatible container. The code is dead simple, I just tired of copying it between projects :)
 
 ## Quick start for application using [Laminas Service Manager](https://docs.laminas.dev/laminas-servicemanager/quick-start/) (fka [Zend Service Manager](https://docs.zendframework.com/zend-servicemanager/quick-start/))
